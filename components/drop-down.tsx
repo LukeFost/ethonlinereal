@@ -1,7 +1,5 @@
 "use client";
-
 import * as React from "react";
-import { useTheme } from "next-themes";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -14,25 +12,27 @@ import {
 type ModeToggleProps = {
   dropDownOptions: Array<[string, string]>;
   buttonDisplay: React.ReactElement;
+  dropDownValue: (value: string) => void;
+  isIconSize: boolean;
 };
 
 export function ModeToggle({
   dropDownOptions,
   buttonDisplay,
+  dropDownValue,
+  isIconSize,
 }: ModeToggleProps) {
-  const { setTheme } = useTheme();
-
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline" size="icon">
+        <Button variant="outline" {...(isIconSize ? { size: "icon" } : {})}>
           {buttonDisplay}
           <span className="sr-only">Toggle theme</span>
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end">
+      <DropdownMenuContent {...(isIconSize ? { align: "end" } : {})}>
         {dropDownOptions.map(([value, label]) => (
-          <DropdownMenuItem key={value} onClick={() => setTheme(value)}>
+          <DropdownMenuItem key={value} onClick={() => dropDownValue(value)}>
             {label}
           </DropdownMenuItem>
         ))}

@@ -1,14 +1,22 @@
+"use client";
 import React from "react";
 import { Moon, Sun } from "lucide-react";
 import { ModeToggle } from "./drop-down";
 import ConnectButton from "./web3button";
+import { useTheme } from "next-themes";
 
 export function MainNav() {
+  const [value, setValue] = React.useState("system");
   const optionsDisplay: [string, string][] = [
     ["light", "Light"],
     ["dark", "Dark"],
     ["system", "System"],
   ];
+  const { setTheme } = useTheme();
+
+  React.useEffect(() => {
+    setTheme(value);
+  }, [value, setTheme]);
 
   return (
     <div className="flex justify-between px-8 py-6 bg-muted rounded-md bevel">
@@ -26,6 +34,8 @@ export function MainNav() {
             </>
           }
           dropDownOptions={optionsDisplay}
+          dropDownValue={setValue}
+          isIconSize={true}
         />
       </div>
     </div>
