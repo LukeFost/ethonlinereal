@@ -1,7 +1,7 @@
 import React from "react";
 import { Moon, Sun } from "lucide-react";
 import { ModeToggle } from "./drop-down";
-import { Button } from "./ui/button";
+import ConnectButton from "./web3button";
 
 export function MainNav() {
   const optionsDisplay: [string, string][] = [
@@ -11,15 +11,13 @@ export function MainNav() {
   ];
 
   return (
-    <div className="flex justify-between px-8 py-6">
+    <div className="flex justify-between px-8 py-6 bg-muted rounded-md bevel">
       {/* Left side component */}
-      <div className="flex space-x-8">
-        <Button variant="outline">NAV</Button>
-      </div>
+      <div className="flex space-x-8"></div>
 
       {/* Right-side components */}
       <div className="flex space-x-4">
-        <Button>Connect</Button>
+        <ConnectButton />
         <ModeToggle
           buttonDisplay={
             <>
