@@ -1,15 +1,6 @@
 "use client";
 import { createWeb3Modal, defaultWagmiConfig } from "@web3modal/wagmi/react";
-import {
-  arbitrum,
-  avalanche,
-  bsc,
-  fantom,
-  gnosis,
-  mainnet,
-  optimism,
-  polygon,
-} from "wagmi/chains";
+import { arbitrumGoerli, goerli } from "wagmi/chains";
 
 export const walletProjectId = "0d54007e35d27d37baebd43f6459529e";
 
@@ -20,16 +11,7 @@ const moreMetaData = {
   icons: ["https://avatars.githubusercontent.com/u/37784886"],
 };
 
-export const chains = [
-  mainnet,
-  polygon,
-  avalanche,
-  arbitrum,
-  bsc,
-  optimism,
-  gnosis,
-  fantom,
-];
+export const chains = [goerli, arbitrumGoerli];
 export const wagmiConfig = defaultWagmiConfig({
   chains: chains,
   projectId: walletProjectId,

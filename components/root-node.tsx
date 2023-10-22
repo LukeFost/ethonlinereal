@@ -6,6 +6,7 @@ import { ModeToggle } from "./drop-down";
 import { Button } from "./ui/button";
 import { useRecoilState } from "recoil";
 import { dataNode } from "./atom";
+import { WagmiButton } from "./wagmiButton";
 
 type ValueArray = (string | number)[];
 type otherValuesArray = string[];
@@ -26,8 +27,8 @@ export function TextUpdaterNode2({ data, isConnectable }) {
   const [functionValue, setFunctionValue] = React.useState("none");
 
   const networkDisplay: [string, string][] = [
-    ["polygon", "Polygon"],
-    ["arbitrum", "Arbitrum"],
+    ["goerli", "Goerli"],
+    ["arbitrumgoerli", "Arbitrum Goerli"],
   ];
   const triggerDisplay: [string, string][] = [
     ["afterswap", "After Swap"],
@@ -127,13 +128,14 @@ export function TextUpdaterNode2({ data, isConnectable }) {
             />
           </>
         )}
-        {triggerValue === "user" && <Button>Activate</Button>}
+        {triggerValue === "user" && <WagmiButton textButton="Activate" />}
       </div>
       <Handle
         type="source"
         position={Position.Bottom}
         id="a"
         isConnectable={isConnectable}
+        style={{ width: "15px", height: "15px" }}
       />
     </div>
   );

@@ -24,34 +24,63 @@ export function TextUpdaterNode({ data, isConnectable }) {
   const [functionValue, setFunctionValue] = React.useState("none");
   const [addressValue, setAddressValue] = useState("");
   const [amountValue, setAmountValue] = useState("");
+  const [providedTokenAddress, setProvidedTokenAddress] = useState("");
+  const [collateralAmountToBorrow, setCollateralAmountToBorrow] = useState("");
 
   const networkDisplay: [string, string][] = [
-    ["polygon", "Polygon"],
-    ["arbitrum", "Arbitrum"],
+    ["goerli", "Goerli"],
+    ["arbitrumgoerli", "Arbitrum Goerli"],
   ];
   const protocolDisplay: [string, string][] = [
     ["compound", "Compound"],
     ["uniswap", "Uniswap"],
-    ["maker", "Maker"],
+    ["spark_lend", "Spark Protocal"],
+    ["control", "Decisions"],
+    ["multichain", "CrossChain"],
   ];
   const functionOptionsLookup = {
     compound: [
-      ["cFunc1", "Compound Function 1"],
-      ["cFunc2", "Compound Function 2"],
+      ["instrucleverageUp", "Create Leveraged Position"],
+      ["instrucclosePosition", "Close Leveraged Position"],
+      ["instrucGetBorrowRate", "Get Supply Rate"],
+      ["instrucGetSupplyRate", "Get Borrow Rate"],
+      ["instrucIsLiquidatable", "Is Position Liquidatable"],
     ],
     uniswap: [
-      ["uFunc1", "Uniswap Function 1"],
-      ["uFunc2", "Uniswap Function 2"],
+      ["instrucSwap", "Swap"],
+      ["instrucCloseLP", "Close Liquidty Position"],
+      ["instrucReturnBounds", "Return Bounds of Position"],
+      ["instrucModifyPosition", "Modify Position"],
+      ["instrucGetPoolLiquidity", "Get Pool Liquidity"],
+      ["instrucAddLiquidity", "Add Liquidity"],
     ],
-    maker: [
-      ["mFunc1", "Maker Function 1"],
-      ["mFunc2", "Maker Function 2"],
+    spark_lend: [
+      ["instrucSupplySpark", "Supply"],
+      ["instrucBorrowSpark", "Borrow"],
+      ["instrucRepaySpark", "Repay"],
+      ["instrucWithdrawSpark", "Withdraw"],
+      ["instrucLeverageUpSpark", "Create Leveraged Position"],
+      ["instrucClosePositionSpark", "Close Leveraged Position"],
+      ["instrucGetHFSpark", "Get Health Factor"],
+    ],
+    control: [
+      ["instrucIfTrueContinue", "Continue If True"],
+      ["instrucIfTrueContinueWResult", "Continue If True with Result"],
+      ["instrucContinueIfOutOfBounds", "Continue If Out Of Bounds"],
+      ["instrucAdjustBounds", "Adjust LP Bounds"],
+      ["instrucStop", "Stop Execution"],
+    ],
+    multichain: [
+      ["instrucSendDataArbGoerli", "Send Scheme to Arb Goerli"],
+      ["instrucSendDataGoerli", "Send Scheme to Goerli"],
+      ["instrucssendFlowTokensArbG", "Send Scheme and Token to Arb Goerli"],
+      ["instrucssendFlowtokensGoerli", "Send Scheme and Token to Goerli"],
     ],
   };
 
   const networkToProtocols = {
-    polygon: ["compound", "uniswap"],
-    arbitrum: ["maker"],
+    goerli: ["compound", "uniswap", "control", "multichain", "spark_lend"],
+    arbitrumgoerli: ["compound", "uniswap", "control", "multichain"],
   };
 
   const functionDisplay = functionOptionsLookup[protocolValue] || [];
@@ -68,6 +97,20 @@ export function TextUpdaterNode({ data, isConnectable }) {
   const handleAmountChange = useCallback((evt: { target: { value: any } }) => {
     setAmountValue(evt.target.value);
   }, []);
+
+  const handleProvidedTokenAddressChange = useCallback(
+    (evt: { target: { value: any } }) => {
+      setProvidedTokenAddress(evt.target.value);
+    },
+    []
+  );
+
+  const handleCollateralAmountToBorrowChange = useCallback(
+    (evt: { target: { value: any } }) => {
+      setCollateralAmountToBorrow(evt.target.value);
+    },
+    []
+  );
 
   const setSpecificValue = (
     value: string,
@@ -98,7 +141,9 @@ export function TextUpdaterNode({ data, isConnectable }) {
       protocolValue !== "none" &&
       functionValue !== "none" &&
       addressValue !== "" &&
-      amountValue !== ""
+      amountValue !== "" &&
+      providedTokenAddress !== "" &&
+      collateralAmountToBorrow !== ""
     ) {
       const datavalue = data.label;
       const valuesArray: ValueArray = [
@@ -107,6 +152,8 @@ export function TextUpdaterNode({ data, isConnectable }) {
         functionValue,
         addressValue,
         amountValue,
+        providedTokenAddress,
+        collateralAmountToBorrow,
         datavalue,
       ];
       setTheDataNode((prevDataNode) => {
@@ -130,7 +177,17 @@ export function TextUpdaterNode({ data, isConnectable }) {
         return [...newDataNode, valuesArray];
       });
     }
-  }, [networkValue, protocolValue, functionValue, addressValue, amountValue]);
+  }, [
+    networkValue,
+    protocolValue,
+    functionValue,
+    addressValue,
+    amountValue,
+    providedTokenAddress,
+    collateralAmountToBorrow,
+    data.label,
+    setTheDataNode,
+  ]);
 
   useEffect(() => {
     const functionOptions = functionOptionsLookup[protocolValue] || [];
@@ -158,7 +215,7 @@ export function TextUpdaterNode({ data, isConnectable }) {
         type="target"
         position={Position.Top}
         isConnectable={isConnectable}
-        className="w-4"
+        style={{ width: "15px", height: "15px" }}
       />
       <div className="flex flex-col gap-2">
         <label>Network</label>
@@ -203,7 +260,7 @@ export function TextUpdaterNode({ data, isConnectable }) {
           }
           isIconSize={false}
         />
-        <label htmlFor="address">Token Address</label>
+        <label htmlFor="address">Collateral Address</label>
         <Input
           id="address"
           name="address"
@@ -212,7 +269,7 @@ export function TextUpdaterNode({ data, isConnectable }) {
           type="string"
           className="nodrag"
         />
-        <label htmlFor="amount">Token Amount</label>
+        <label htmlFor="amount">Collateral Amount</label>
         <Input
           id="amount"
           name="amount"
@@ -221,12 +278,35 @@ export function TextUpdaterNode({ data, isConnectable }) {
           type="number"
           className="nodrag"
         />
+        {functionValue === "instrucleverageUp" && (
+          <>
+            <label>Provided Token Address</label>
+            <Input
+              id="providedTokenAddress"
+              name="providedTokenAddress"
+              placeholder="0x00"
+              onChange={handleProvidedTokenAddressChange}
+              type="string"
+              className="nodrag"
+            />
+            <label>Leverage Amount</label>
+            <Input
+              id="collateralAmountToBorrow"
+              name="collateralAmountToBorrow"
+              placeholder="0.00"
+              onChange={handleCollateralAmountToBorrowChange}
+              type="number"
+              className="nodrag"
+            />
+          </>
+        )}
       </div>
       <Handle
         type="source"
         position={Position.Bottom}
         id="a"
         isConnectable={isConnectable}
+        style={{ width: "15px", height: "15px" }}
       />
     </div>
   );
