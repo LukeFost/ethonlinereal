@@ -23,7 +23,7 @@ export function DialogCreate({
   return (
     <Dialog>
       <DialogTrigger asChild>{theButton}</DialogTrigger>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-md md:max-w-7xl">
         <DialogHeader>
           <DialogTitle>{childTitle}</DialogTitle>
           <DialogDescription>{childDescription}</DialogDescription>

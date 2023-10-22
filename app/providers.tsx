@@ -4,6 +4,7 @@ import { createWeb3Modal } from "@web3modal/wagmi/react";
 import { WagmiConfig } from "wagmi";
 import { chains, wagmiConfig, walletProjectId } from "../wagmi";
 import { ThemeProvider } from "@/components/theme-provider";
+import { RecoilRoot } from "recoil";
 
 createWeb3Modal({ wagmiConfig, projectId: walletProjectId, chains });
 
@@ -17,7 +18,9 @@ export default function Providers({ children }: { children: React.ReactNode }) {
   return (
     <>
       {Iready ? (
-        <WagmiConfig config={wagmiConfig}>{children}</WagmiConfig>
+        <RecoilRoot>
+          <WagmiConfig config={wagmiConfig}>{children}</WagmiConfig>
+        </RecoilRoot>
       ) : null}
     </>
   );
