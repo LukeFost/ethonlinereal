@@ -10,6 +10,7 @@ import {
   useContractWrite,
 } from "wagmi";
 import { instructionFacet_abi_arbg, managerFacet_abi_arbg } from "./contracts";
+import { isError } from "lodash";
 
 interface WagmiButtonProps {
   textButton: string;
@@ -57,7 +58,7 @@ export function WagmiButton(props: WagmiButtonProps) {
   });
 
   // Initial contract reads without the dependent call
-  const { data, isSuccess, refetch } = useContractReads({
+  const { data, isSuccess, refetch, isError } = useContractReads({
     contracts: [
       ...contractCalls,
       {
@@ -87,15 +88,23 @@ export function WagmiButton(props: WagmiButtonProps) {
     }
   }, [contractCalls, data, instrucGet, ultiArgment]);
 
-  const { config } = usePrepareContractWrite({
+  const { config, isError: prepError } = usePrepareContractWrite({
     ...managerFacet_abi_arbg,
     functionName: "startWorking",
-    args: data[3],
+    args: data ? data[3] : undefined, // Check if data is available before accessing it
   });
 
-  const { write } = useContractWrite(config);
+  const { write, error } = useContractWrite(config);
 
   useEffect(() => {
+    if (error) {
+      console.error("Error initializing contract write:", error);
+    }
+  }, [error]);
+
+  useEffect(() => {
+    if (!data) return; // Early return if data is not available
+
     refetch();
     const newUltiArgment = stemData.map((array) => [
       data[0],
@@ -107,6 +116,8 @@ export function WagmiButton(props: WagmiButtonProps) {
   }, [refetch, stemData, data]);
 
   useEffect(() => {
+    if (!data) return; // Early return if data is not available
+
     let tempArray: string[] = [];
     valueList.forEach((value) => {
       if (data[4]) {
@@ -115,15 +126,40 @@ export function WagmiButton(props: WagmiButtonProps) {
     });
     setResultsArray(tempArray);
   }, [data, valueList]);
+  if (isError) {
+    console.error("An error has occurred during contract reading");
+  }
+
+  useEffect(() => {
+    console.log("UltiArgment updated:", ultiArgment);
+    console.log("InstrucGet updated:", instrucGet);
+    console.log("ResultsArray updated:", resultsArray);
+    console.log("FunctionValue updated:", functionValue);
+    console.log("ContractsList updated:", contractsList);
+  }, [ultiArgment, instrucGet, resultsArray, functionValue, contractsList]);
+
+  useEffect(() => {
+    console.log("Contract write config:", config);
+  }, [config]);
 
   function wagmiRead() {
-    console.log("Data:", data);
-    console.log("Value at stemData[0][3]:", stemData[0][3]);
-    console.log("Value at stemData[0][5]:", stemData[0][5]);
-    console.log("Args1:", args1);
-    console.log("Args2:", args2);
-    write?.();
+    try {
+      if (!write) {
+        throw new Error("Write function is not available."); // Check for write function availability
+      }
+      write?.();
+      console.log("Write operation initiated."); // Confirmation that write has been called
+    } catch (error) {
+      console.error("An error occurred during wagmiRead execution:", error); // Error logging for wagmiRead function
+    }
   }
+
+  useEffect(() => {
+    console.log(
+      "Write function status:",
+      write ? "available" : "not available"
+    );
+  }, [write]);
 
   return <Button onClick={wagmiRead}>{props.textButton}</Button>;
 }
